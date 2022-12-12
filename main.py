@@ -9,20 +9,14 @@ state = State()
 
 @bot.message_handler(commands = ['start', 'help'])
 def start(message):
-    mess = f'Привет, {message.from_user.first_name}'
+    mess = f'Привет, {message.from_user.first_name}\n' + """Добро пожаловать в бот-расписание!\nДля начала работы необходимо ввести команду "/type" """
     bot.send_message(message.chat.id, mess)
 
 
 @bot.message_handler(commands=['type'])
 def type(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    btn1 = types.KeyboardButton("УВП-111")
-    btn2 = types.KeyboardButton("УВП-112")
-    btn3 = types.KeyboardButton("УВВ-111")
-    btn4 = types.KeyboardButton("УИС-111")
-    btn5 = types.KeyboardButton("УИС-112")
+    markup = create_reply_keyboard(items=valid_groups, resize_keyboard=True)
 
-    markup.add(btn1, btn2, btn3, btn4, btn5)
     bot.send_message(message.chat.id, text="{0.first_name}, выберете свою группу :)".format(message.from_user), reply_markup=markup)
 
 @bot.message_handler(content_types=['text'])
@@ -36,13 +30,15 @@ def func(message):
     if state.group == "" and state.week_day == "":
         state.group = message.text
 
-        markup = create_reply_keyboard(items=["Понедельник", "Вторник", "Среда", "Четверг", "Пятница"], resize_keyboard=True)
+        markup = create_reply_keyboard(items=valid_days, resize_keyboard=True)
         bot.send_message(message.chat.id, text="{0.first_name}, выберете день недели :)".format(message.from_user), reply_markup=markup)
 
     elif state.group != "" and state.week_day == "":
         state.week_day = message.text
         bot.send_message(message.chat.id, text=data[state.group][state.week_day])
         state.reset()
+        # Без этой строки при определенных условиях падает с ошибкой!!!
+        type(message)
 
 @bot.message_handler()
 def get_user_text(message):

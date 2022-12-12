@@ -19,12 +19,15 @@ def create_reply_keyboard(
     one_time_keyboard: bool or None = None,
     input_field_placeholder: Any or None = None,
     selective: bool or None = None,
+    row_width: int = 3,
+
 ) -> types.ReplyKeyboardMarkup:
     markup = types.ReplyKeyboardMarkup(
         resize_keyboard=resize_keyboard,
         one_time_keyboard=one_time_keyboard,
         input_field_placeholder=input_field_placeholder,
         selective=selective,
+        row_width=row_width
     )
 
     for button_text in items:
